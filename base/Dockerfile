@@ -4,35 +4,42 @@ WORKDIR /root
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TZ=Asia/Shanghai
-RUN apt-get update && \
-    apt-get install -y apt-transport-https && \
-    apt-get install -y apt-utils && \
-    apt-get install -y autoconf && \
-    apt-get install -y autoconf-archive && \
-    apt-get install -y build-essential && \
-    apt-get install -y curl && \
-    apt-get install -y expect && \
-    apt-get install -y git && \
-    apt-get install -y htop && \
-    apt-get install -y libgtk-3-dev && \
-    apt-get install -y libncurses5-dev && \
-    apt-get install -y libpython3-dev && \
-    apt-get install -y libssl-dev && \
-    apt-get install -y libxt-dev && \
-    apt-get install -y openssh-server && \
-    apt-get install -y python3-dbus && \
-    apt-get install -y python3-docutils && \
-    apt-get install -y python3-minimal && \
-    apt-get install -y pkg-config && \
-    apt-get install -y tmux && \
-    apt-get install -y xsel && \
-    apt-get install -y zsh
+RUN apt-get update
+RUN apt-get install -y apt-transport-https
+RUN apt-get install -y apt-utils
+RUN apt-get install -y autoconf
+RUN apt-get install -y autoconf-archive
+RUN apt-get install -y build-essential
+RUN apt-get install -y curl
+RUN apt-get install -y expect
+RUN apt-get install -y gdb
+RUN apt-get install -y git
+RUN apt-get install -y htop
+RUN apt-get install -y libgtk-3-dev
+RUN apt-get install -y libncurses5-dev
+RUN apt-get install -y libpython3-dev
+RUN apt-get install -y libssl-dev
+RUN apt-get install -y libxt-dev
+RUN apt-get install -y openssh-server
+RUN apt-get install -y python3-dbus
+RUN apt-get install -y python3-docutils
+RUN apt-get install -y python3-minimal
+RUN apt-get install -y pkg-config
+RUN apt-get install -y tmux
+RUN apt-get install -y xsel
+RUN apt-get install -y zsh
 
 RUN chsh -s $(which zsh)
 COPY install.sh .
 RUN sh ./install.sh && rm ./install.sh && \
     echo '' >> /root/.oh-my-zsh/themes/robbyrussell.zsh-theme && \
     echo 'RPROMPT=%F{green}%~%f' >> /root/.oh-my-zsh/themes/robbyrussell.zsh-theme
+
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g commitizen && \
+    npm install -g cz-conventional-changelog && \
+    echo '{ "path": "cz-conventional-changelog" }' > ~/.czrc
 
 COPY go1.18.linux-amd64.tar.gz .
 RUN tar -C /usr/local -xvzf go1.18.linux-amd64.tar.gz && \
@@ -42,7 +49,6 @@ RUN tar -C /usr/local -xvzf go1.18.linux-amd64.tar.gz && \
     echo 'export PATH=$PATH:/usr/local/go/bin' >> /root/.zshrc && \
     echo 'export PATH=$PATH:/root/gocode/bin' >> /root/.zshrc && \
     sed -i '/^plugins=/s/git/git golang/' /root/.zshrc
-
 
 COPY cmake-3.22.3.tar.gz .
 RUN tar xvzf cmake-3.22.3.tar.gz && \
@@ -73,7 +79,8 @@ RUN tar -C /usr/local/ -xvzf apache-maven-3.8.5-bin.tar.gz && \
     echo '' >> /root/.zshrc && \
     echo 'export PATH=$PATH:/usr/local/apache-maven-3.8.5/bin' >> /root/.zshrc
 
-RUN ssh-keygen -t ed25519 -C "zhehuama@deepglint.com" -q -f ~/.ssh/id_ed25519 -N ''
+RUN ssh-keygen -t ed25519 -C "zhehuama@deepglint.com" -q -f ~/.ssh/id_ed25519 -N '' && \
+    touch /root/.ssh/authorized_keys
 
 COPY ./vim_configure/.vimrc ./.vimrc
 COPY ./vim_configure/.brackets.vim ./.brackets.vim

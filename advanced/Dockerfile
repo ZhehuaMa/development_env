@@ -1,4 +1,4 @@
-FROM mydockerhub/developmentkit_base:v0.1-x86_64
+FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.1-x86_64
 
 COPY l_BaseKit_p_2022.1.2.146_offline.sh .
 RUN sh ./l_BaseKit_p_2022.1.2.146_offline.sh \
@@ -32,8 +32,8 @@ RUN bash ./Anaconda3-2021.11-Linux-x86_64.sh -b && \
     rm Anaconda3-2021.11-Linux-x86_64.sh
 
 # RUN git clone https://github.com/gflags/gflags.git
-COPY gflags ./gflags
-RUN mkdir gflags/build && \
+# COPY gflags ./gflags
+RUN git clone https://github.com/gflags/gflags.git && mkdir gflags/build && \
     cd gflags/build && \
     cmake -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON -DGFLAGS_NAMESPACE='google' -DINSTALL_HEADERS=ON .. && \
     make && \
@@ -42,8 +42,8 @@ RUN mkdir gflags/build && \
     rm -rf gflags
 
 # RUN git clone https://github.com/google/glog.git
-COPY glog ./glog
-RUN cd glog && \
+# COPY glog ./glog
+RUN git clone https://github.com/google/glog.git && cd glog && \
     cmake -S . -B build -G "Unix Makefiles" && \
     cmake --build build && \
     cmake --build build --target install && \
