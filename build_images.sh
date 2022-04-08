@@ -34,4 +34,6 @@ function build_image() {
 }
 
 build_image ${base_repo}:${base_tag}
+
+sed -i "1s/.*/FROM ${base_repo}:${base_tag}/" $(pwd)/advanced/Dockerfile
 build_image ${advanced_repo}:${advanced_tag}
