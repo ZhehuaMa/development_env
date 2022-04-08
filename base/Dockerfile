@@ -88,6 +88,8 @@ COPY ./vim_configure/.brackets.vim ./.brackets.vim
 RUN echo '' >> .zshrc && \
     echo 'export LANG=C.UTF-8' >> .zshrc
 
+RUN sed -i '/X11UseLocalhost/s/.*/X11UseLocalhost no/' /etc/ssh/sshd_config
+
 EXPOSE 22
 CMD ["tail", "-f", "/dev/null"]
 

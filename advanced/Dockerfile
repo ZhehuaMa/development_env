@@ -28,8 +28,10 @@ COPY Anaconda3-2021.11-Linux-x86_64.sh .
 RUN bash ./Anaconda3-2021.11-Linux-x86_64.sh -b && \
     eval "$(/root/anaconda3/bin/conda shell.zsh hook)" && \
     conda init zsh && \
-    conda install -y pytorch torchvision torchaudio cpuonly -c pytorch && \
+    conda install -y pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch && \
     rm Anaconda3-2021.11-Linux-x86_64.sh
+
+RUN pip3 install onnxruntime-gpu
 
 # RUN git clone https://github.com/gflags/gflags.git
 # COPY gflags ./gflags
