@@ -90,6 +90,8 @@ RUN echo '' >> .zshrc && \
 
 RUN sed -i '/X11UseLocalhost/s/.*/X11UseLocalhost no/' /etc/ssh/sshd_config
 
+RUN sed -i '/^plugins=/s/git/git docker/' /root/.zshrc
+
 EXPOSE 22
 CMD ["tail", "-f", "/dev/null"]
 

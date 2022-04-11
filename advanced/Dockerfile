@@ -1,4 +1,4 @@
-FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.1-x86_64
+FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.2-x86_64
 
 COPY l_BaseKit_p_2022.1.2.146_offline.sh .
 RUN sh ./l_BaseKit_p_2022.1.2.146_offline.sh \
@@ -31,9 +31,11 @@ RUN bash ./Anaconda3-2021.11-Linux-x86_64.sh -b && \
     conda install -y pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch && \
     rm Anaconda3-2021.11-Linux-x86_64.sh
 
-RUN pip3 install onnxruntime-gpu
+SHELL ["/root/anaconda3/bin/conda", "run", "--no-capture-output", "-n", "base", "/bin/zsh", "-c"]
+RUN apt-get install -y python3-pip && \
+    pip3 install onnxruntime-gpu
 
-# RUN git clone https://github.com/gflags/gflags.git
+# git clone https://github.com/gflags/gflags.git
 # COPY gflags ./gflags
 RUN git clone https://github.com/gflags/gflags.git && mkdir gflags/build && \
     cd gflags/build && \
@@ -43,7 +45,7 @@ RUN git clone https://github.com/gflags/gflags.git && mkdir gflags/build && \
     cd /root && \
     rm -rf gflags
 
-# RUN git clone https://github.com/google/glog.git
+# git clone https://github.com/google/glog.git
 # COPY glog ./glog
 RUN git clone https://github.com/google/glog.git && cd glog && \
     cmake -S . -B build -G "Unix Makefiles" && \

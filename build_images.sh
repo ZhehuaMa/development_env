@@ -1,10 +1,10 @@
 #!/bin/bash
 
 base_repo='dockerhub.deepglint.com/atlas/developmentkit_base'
-base_tag=v0.1-x86_64
+base_tag=v0.2-x86_64
 
 advanced_repo='dockerhub.deepglint.com/atlas/developmentkit_advanced'
-advanced_tag=v0.4-x86_64
+advanced_tag=v0.5-x86_64
 
 context_path=''
 
@@ -16,11 +16,12 @@ function get_context_path() {
 function docker_build() {
     work_dir=$(pwd)/${context_path}
     set -o pipefail
-    docker build -t $1 -f ${work_dir}/Dockerfile $work_dir 2>&1 | tee ${work_dir}/docker_build.log
+    docker build -t $1 -f ${work_dir}/Dockerfile $work_dir 2>&1 | tee -a ${work_dir}/docker_build.log
 }
 
 function build_image() {
     get_context_path $1
+    rm -f ${context_path}/docker_build.log
 
     echo "building images ${1}..."
     docker_build $1
