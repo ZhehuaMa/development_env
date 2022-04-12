@@ -40,3 +40,5 @@ build_image ${base_repo}:${base_tag}
 
 sed -i "1s#.*#FROM ${base_repo}:${base_tag}#" $(pwd)/advanced/Dockerfile
 build_image ${advanced_repo}:${advanced_tag}
+
+sed -i "s/tag=.*/tag='${advanced_tag}'/" $(pwd)/run_development.sh
