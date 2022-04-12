@@ -1,4 +1,4 @@
-FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.2-x86_64
+FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.3-x86_64
 
 COPY l_BaseKit_p_2022.1.2.146_offline.sh .
 RUN sh ./l_BaseKit_p_2022.1.2.146_offline.sh \

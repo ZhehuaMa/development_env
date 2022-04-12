@@ -11,6 +11,7 @@ RUN apt-get install -y autoconf
 RUN apt-get install -y autoconf-archive
 RUN apt-get install -y build-essential
 RUN apt-get install -y curl
+RUN apt-get install -y eog
 RUN apt-get install -y expect
 RUN apt-get install -y gdb
 RUN apt-get install -y git
@@ -31,7 +32,8 @@ RUN apt-get install -y zsh
 
 RUN chsh -s $(which zsh)
 COPY install.sh .
-RUN sh ./install.sh && rm ./install.sh && \
+# sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" && \
     echo '' >> /root/.oh-my-zsh/themes/robbyrussell.zsh-theme && \
     echo 'RPROMPT=%F{green}%~%f' >> /root/.oh-my-zsh/themes/robbyrussell.zsh-theme
 
@@ -41,8 +43,10 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
     npm install -g cz-conventional-changelog && \
     echo '{ "path": "cz-conventional-changelog" }' > ~/.czrc
 
-COPY go1.18.linux-amd64.tar.gz .
-RUN tar -C /usr/local -xvzf go1.18.linux-amd64.tar.gz && \
+# https://go.dev/dl/go1.18.linux-amd64.tar.gz
+# COPY go1.18.linux-amd64.tar.gz .
+RUN curl -fsSLO https://go.dev/dl/go1.18.linux-amd64.tar.gz && \
+    tar -C /usr/local -xvzf go1.18.linux-amd64.tar.gz && \
     rm -v ./go1.18.linux-amd64.tar.gz && \
     echo '' >> /root/.zshrc && \
     echo 'export GOPATH=/root/gocode' >> /root/.zshrc && \
@@ -50,22 +54,25 @@ RUN tar -C /usr/local -xvzf go1.18.linux-amd64.tar.gz && \
     echo 'export PATH=$PATH:/root/gocode/bin' >> /root/.zshrc && \
     sed -i '/^plugins=/s/git/git golang/' /root/.zshrc
 
-COPY cmake-3.22.3.tar.gz .
-RUN tar xvzf cmake-3.22.3.tar.gz && \
+# https://github.com/Kitware/CMake/releases/download/v3.22.3/cmake-3.22.3.tar.gz
+# COPY cmake-3.22.3.tar.gz .
+RUN curl -fsSLO https://github.com/Kitware/CMake/releases/download/v3.22.3/cmake-3.22.3.tar.gz && \
+    tar xvzf cmake-3.22.3.tar.gz && \
     cd cmake-3.22.3 && \
     ./bootstrap && make -j8 && make install && \
     cd .. && \
     rm -rv cmake-3.22.3*
 
-COPY vim ./vim
-RUN cd vim/src && \
+# https://github.com/vim/vim.git
+# COPY vim ./vim
+RUN git clone https://github.com/vim/vim.git && \
+    cd vim/src && \
     sed -i 's/^#CONF_OPT_PYTHON3 = --enable-python3interp$/CONF_OPT_PYTHON3 = --enable-python3interp/' Makefile && \
-    make reconfig && \
-    make -j8 && \
-    make install && \
+    make reconfig && make -j8 && make install && \
     cd /root && \
     rm -rv vim
 
+# Download JDK manually.
 COPY jdk-8u321-linux-x64.tar.gz .
 RUN tar -C /usr/local -xvzf jdk-8u321-linux-x64.tar.gz && \
     echo "" >> /root/.zshrc && \
@@ -73,8 +80,10 @@ RUN tar -C /usr/local -xvzf jdk-8u321-linux-x64.tar.gz && \
     echo 'export PATH=$PATH:$JAVA_HOME/bin' >> /root/.zshrc && \
     rm -v /root/jdk-8u321-linux-x64.tar.gz
 
-COPY apache-maven-3.8.5-bin.tar.gz .
-RUN tar -C /usr/local/ -xvzf apache-maven-3.8.5-bin.tar.gz && \
+# https://dlcdn.apache.org/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz
+# COPY apache-maven-3.8.5-bin.tar.gz .
+RUN curl -fsSLO https://dlcdn.apache.org/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz && \
+    tar -C /usr/local/ -xvzf apache-maven-3.8.5-bin.tar.gz && \
     rm -v /root/apache-maven-3.8.5-bin.tar.gz && \
     echo '' >> /root/.zshrc && \
     echo 'export PATH=$PATH:/usr/local/apache-maven-3.8.5/bin' >> /root/.zshrc

@@ -1,7 +1,9 @@
 #!/bin/bash
 
+https_proxy=''
+
 base_repo='dockerhub.deepglint.com/atlas/developmentkit_base'
-base_tag=v0.2-x86_64
+base_tag=v0.3-x86_64
 
 advanced_repo='dockerhub.deepglint.com/atlas/developmentkit_advanced'
 advanced_tag=v0.5-x86_64
@@ -16,7 +18,7 @@ function get_context_path() {
 function docker_build() {
     work_dir=$(pwd)/${context_path}
     set -o pipefail
-    docker build -t $1 -f ${work_dir}/Dockerfile $work_dir 2>&1 | tee -a ${work_dir}/docker_build.log
+    docker build --build-arg HTTPS_PROXY=$https_proxy -t $1 -f ${work_dir}/Dockerfile $work_dir 2>&1 | tee -a ${work_dir}/docker_build.log
 }
 
 function build_image() {
