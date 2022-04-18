@@ -2,7 +2,7 @@
 
 container_name="development_env"
 image='dockerhub.deepglint.com/atlas/developmentkit_advanced'
-tag='v0.5-x86_64'
+tag='v0.6-x86_64'
 
 docker rm -f $container_name
 
