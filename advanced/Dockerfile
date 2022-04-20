@@ -54,8 +54,6 @@ RUN git clone https://github.com/google/glog.git && cd glog && \
 RUN apt-get install -y libopenblas-base && \
     apt-get install -y libopenblas-dev
 
-RUN pip3 install opencv-python
-
 # Download cuDNN manually.
 COPY cudnn-local-repo-ubuntu1804-8.4.0.27_1.0-1_amd64.deb .
 RUN dpkg -i cudnn-local-repo-ubuntu1804-8.4.0.27_1.0-1_amd64.deb && \
@@ -66,7 +64,53 @@ RUN dpkg -i cudnn-local-repo-ubuntu1804-8.4.0.27_1.0-1_amd64.deb && \
     apt-get install -y libcudnn8-samples=8.4.0.27-1+cuda11.6 && \
     rm -v cudnn-local-repo-ubuntu1804-8.4.0.27_1.0-1_amd64.deb
 
-RUN apt-get update && \
-    apt-get install -y caffe-cuda && \
-    git clone https://github.com/BVLC/caffe.git
+RUN curl -fsSLO https://github.com/protocolbuffers/protobuf/releases/download/v3.20.0/protobuf-all-3.20.0.tar.gz && \
+    apt-get install -y unzip && \
+    tar xvzf protobuf-all-3.20.0.tar.gz && \
+    rm protobuf-all-3.20.0.tar.gz && \
+    cd protobuf-3.20.0 && \
+    ./configure && \
+    make -j$(nproc) && \
+    make install && \
+    cd $HOME && \
+    rm -rf protobuf-3.20.0 && \
+    echo '' >> ~/.zshrc && \
+    echo 'export LD_LIBRARY_PATH=/usr/local/lib' >> ~/.zshrc
+
+RUN pip3 install opencv-python
+
+RUN apt-get install -y liblmdb-dev
+RUN apt-get install -y libsnappy-dev
+RUN apt-get install -y libleveldb-dev
+RUN apt-get install -y libboost-all-dev
+COPY sources.list /etc/apt/sources.list
+RUN apt-get update && apt-get install -y libopencv-dev
+RUN apt-get install -y libhdf5-serial-dev
+RUN git clone https://github.com/BVLC/caffe.git && \
+    cd caffe && \
+    cp Makefile.config.example Makefile.config && \
+    sed -i 's/# OPENCV_VERSION/OPENCV_VERSION/' Makefile.config && \
+    sed -i 's/ -gencode arch=compute_20,code=sm_20//' Makefile.config && \
+    sed -i '/arch=compute_[2-5]/d' Makefile.config && \
+    sed -i 's/BLAS := atlas/BLAS := mkl/' Makefile.config && \
+    sed -i '/^PYTHON_INCLUDE/d' Makefile.config && \
+    sed -i 's%.*/usr/lib/python2.7/dist-packages/numpy/core/include.*%%' Makefile.config && \
+    sed -i '/# ANACONDA_HOME/s%^.*$%ANACONDA_HOME := $(HOME)/anaconda3%' Makefile.config && \
+    sed -i 's/# PYTHON_LIBRARIES.*/PYTHON_LIBRARIES := boost_python3 python3.9/' Makefile.config && \
+    sed -i 's%# PYTHON_INCLUDE := /.*%PYTHON_INCLUDE := $(ANACONDA_HOME)/include/python3.9 \\%' Makefile.config && \
+    sed -i 's%#.*/usr/lib/python3.5/dist-packages/numpy/core/include%\t\t\t$(ANACONDA_HOME)/lib/python3.9/site-packages/numpy/core/include%' Makefile.config && \
+    sed -i '/^PYTHON_LIB :=/d' Makefile.config && \
+    sed -i 's/# PYTHON_LIB :=/PYTHON_LIB :=/' Makefile.config && \
+    sed -i 's/# WITH_PYTHON_LAYER/WITH_PYTHON_LAYER/' Makefile.config && \
+    sed -i 's#^\(INCLUDE_DIRS :=.*\)#\1 /usr/include/hdf5/serial#' Makefile.config && \
+    grep 'gflags::' $(find . -name '*') 2>/dev/null | awk -F ':' '{print $1}' | xargs -I '{}' sed -i 's/gflags::/google::/' '{}' && \
+    sed -i 's/SetTotalBytesLimit(\(.*\), .*);/SetTotalBytesLimit(\1);/' src/caffe/util/io.cpp && \
+    sed -i 's#/opt/intel/mkl#/opt/intel/oneapi/mkl/latest#' Makefile
+RUN cd caffe && \
+    make all -j $(nproc) && \
+    make pycaffe -j $(nproc) && \
+    sed -i 's/as_grey/as_gray/' python/caffe/io.py && \
+    echo '' >> ~/.zshrc && \
+    echo "export PYTHONPATH=$HOME/caffe/python" >> ~/.zshrc
+RUN echo '' >> ~/.zshrc; echo "export LD_LIBRARY_PATH=$HOME/anaconda3/lib" >> ~/.zshrc
 

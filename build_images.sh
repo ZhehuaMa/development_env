@@ -1,6 +1,7 @@
 #!/bin/bash
 
 https_proxy=''
+proxy_auth='https://your_proxy.com:1234'
 
 base_repo='dockerhub.deepglint.com/atlas/developmentkit_base'
 base_tag=v0.3-x86_64
@@ -17,11 +18,11 @@ function get_context_path() {
 }
 
 function switch_proxy() {
-    if [ -z "$build_arg" ]
+    if [ -z "$https_proxy" ]
     then
-        build_arg="--build-arg HTTPS_PROXY=$https_proxy"
+        https_proxy=$proxy_auth
     else
-        build_arg=''
+        https_proxy=''
     fi
 }
 
@@ -29,7 +30,7 @@ function docker_build() {
     work_dir=$(pwd)/$context_path
     switch_proxy
     set -o pipefail
-    docker build $build_arg -t $1 -f $work_dir/Dockerfile $work_dir 2>&1 | tee -a $work_dir/docker_build.log
+    docker build --build-arg HTTPS_PROXY=$https_proxy -t $1 -f $work_dir/Dockerfile $work_dir 2>&1 | tee -a $work_dir/docker_build.log
 }
 
 function build_image() {
