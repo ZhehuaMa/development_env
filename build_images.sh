@@ -4,7 +4,7 @@ https_proxy=''
 proxy_auth='https://your_proxy.com:1234'
 
 base_repo='dockerhub.deepglint.com/atlas/developmentkit_base'
-base_tag=v0.3-x86_64
+base_tag=v0.4-x86_64
 
 advanced_repo='dockerhub.deepglint.com/atlas/developmentkit_advanced'
 advanced_tag=v0.6-x86_64

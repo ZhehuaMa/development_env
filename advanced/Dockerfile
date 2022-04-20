@@ -1,4 +1,4 @@
-FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.3-x86_64
+FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.4-x86_64
 
 RUN curl -fsSLO https://registrationcenter-download.intel.com/akdlm/irc_nas/18487/l_BaseKit_p_2022.1.2.146_offline.sh && \
     sh ./l_BaseKit_p_2022.1.2.146_offline.sh \
@@ -83,8 +83,7 @@ RUN apt-get install -y liblmdb-dev
 RUN apt-get install -y libsnappy-dev
 RUN apt-get install -y libleveldb-dev
 RUN apt-get install -y libboost-all-dev
-COPY sources.list /etc/apt/sources.list
-RUN apt-get update && apt-get install -y libopencv-dev
+RUN apt-get install -y libopencv-dev
 RUN apt-get install -y libhdf5-serial-dev
 RUN git clone https://github.com/BVLC/caffe.git && \
     cd caffe && \

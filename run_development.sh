@@ -13,7 +13,7 @@ docker run -d --name=$container_name -P \
     -v /etc/timezone:/etc/timezone \
     -v /usr/bin/docker:/usr/bin/docker \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    ${image}:$tag
+    $image:$tag
 
 docker port $container_name
 
