@@ -85,9 +85,10 @@ RUN apt-get install -y libleveldb-dev
 RUN apt-get install -y libboost-all-dev
 RUN apt-get install -y libopencv-dev
 RUN apt-get install -y libhdf5-serial-dev
-RUN git clone https://github.com/BVLC/caffe.git && \
-    cd caffe && \
-    cp Makefile.config.example Makefile.config && \
+# Replace your own user name and password.
+RUN git clone https://Username:password@gitlab.deepglint.com/leimao/caffe.git
+RUN cd caffe && \
+    curl -fsSL -o Makefile.config https://raw.githubusercontent.com/BVLC/caffe/master/Makefile.config.example && \
     sed -i 's/# OPENCV_VERSION/OPENCV_VERSION/' Makefile.config && \
     sed -i 's/ -gencode arch=compute_20,code=sm_20//' Makefile.config && \
     sed -i '/arch=compute_[2-5]/d' Makefile.config && \
