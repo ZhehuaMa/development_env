@@ -7,6 +7,7 @@ tag='v0.6-x86_64'
 docker rm -f $container_name
 
 docker run -d --name=$container_name -P \
+    --restart=always \
     --security-opt seccomp=unconfined \
     -v /:/host \
     -v /etc/localtime:/etc/localtime \

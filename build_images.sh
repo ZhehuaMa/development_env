@@ -1,10 +1,10 @@
 #!/bin/bash
 
 https_proxy=''
-proxy_auth='https://your_proxy.com:1234'
+proxy_auth='https://yourproxy.com'
 
 base_repo='dockerhub.deepglint.com/atlas/developmentkit_base'
-base_tag=v0.4-x86_64
+base_tag=v0.5-x86_64
 
 advanced_repo='dockerhub.deepglint.com/atlas/developmentkit_advanced'
 advanced_tag=v0.6-x86_64
@@ -28,7 +28,6 @@ function switch_proxy() {
 
 function docker_build() {
     work_dir=$(pwd)/$context_path
-    switch_proxy
     set -o pipefail
     docker build --build-arg HTTPS_PROXY=$https_proxy -t $1 -f $work_dir/Dockerfile $work_dir 2>&1 | tee -a $work_dir/docker_build.log
 }
@@ -43,6 +42,7 @@ function build_image() {
     while [ $? -ne 0 ]
     do
         echo "building images $1 failed, retrying..."
+        switch_proxy
         docker_build $1
     done
     echo "building images $1 success!"

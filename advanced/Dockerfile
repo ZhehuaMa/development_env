@@ -1,4 +1,4 @@
-FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.4-x86_64
+FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.5-x86_64
 
 RUN curl -fsSLO https://registrationcenter-download.intel.com/akdlm/irc_nas/18487/l_BaseKit_p_2022.1.2.146_offline.sh && \
     sh ./l_BaseKit_p_2022.1.2.146_offline.sh \
@@ -86,7 +86,7 @@ RUN apt-get install -y libboost-all-dev
 RUN apt-get install -y libopencv-dev
 RUN apt-get install -y libhdf5-serial-dev
 # Replace your own user name and password.
-RUN git clone https://Username:password@gitlab.deepglint.com/leimao/caffe.git
+RUN git clone https://username:password@gitlab.deepglint.com/leimao/caffe.git
 RUN cd caffe && \
     curl -fsSL -o Makefile.config https://raw.githubusercontent.com/BVLC/caffe/master/Makefile.config.example && \
     sed -i 's/# OPENCV_VERSION/OPENCV_VERSION/' Makefile.config && \
@@ -113,4 +113,6 @@ RUN cd caffe && \
     echo '' >> ~/.zshrc && \
     echo "export PYTHONPATH=$HOME/caffe/python" >> ~/.zshrc
 RUN echo '' >> ~/.zshrc; echo "export LD_LIBRARY_PATH=$HOME/anaconda3/lib" >> ~/.zshrc
+
+RUN echo '' >> ~/.zshrc && echo 'export GONOPROXY="https://gitlab.deepglint.com"' >> ~/.zshrc
 

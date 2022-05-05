@@ -95,6 +95,17 @@ RUN sed -i '/X11UseLocalhost/s/.*/X11UseLocalhost no/' /etc/ssh/sshd_config
 
 RUN sed -i '/^plugins=/s/git/git docker/' /root/.zshrc
 
+SHELL ["/bin/zsh", "-c"]
+RUN echo '' >> $HOME/.zshrc && echo 'export GOPROXY="https://proxy.golang.com.cn,direct"' >> $HOME/.zshrc
+RUN source $HOME/.zshrc && go install golang.org/x/tools/gopls@latest
+RUN source $HOME/.zshrc && go install github.com/go-delve/delve/cmd/dlv@latest
+RUN source $HOME/.zshrc && go install github.com/ramya-rao-a/go-outline@latest
+RUN curl -fsSLO https://github.com/golangci/golangci-lint/releases/download/v1.45.2/golangci-lint-1.45.2-linux-amd64.tar.gz && \
+    tar xvzf golangci-lint-1.45.2-linux-amd64.tar.gz && \
+    cp golangci-lint-1.45.2-linux-amd64/golangci-lint $HOME/gocode/bin/ && \
+    rm -rf golangci-lint-1.45.2-linux-amd64/ golangci-lint-1.45.2-linux-amd64.tar.gz
+SHELL ["/bin/sh", "-c"]
+
 EXPOSE 22
 CMD ["tail", "-f", "/dev/null"]
 
