@@ -1,4 +1,4 @@
-FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.5-x86_64
+FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.6-x86_64
 
 RUN curl -fsSLO https://registrationcenter-download.intel.com/akdlm/irc_nas/18487/l_BaseKit_p_2022.1.2.146_offline.sh && \
     sh ./l_BaseKit_p_2022.1.2.146_offline.sh \

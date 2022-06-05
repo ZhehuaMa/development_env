@@ -1,10 +1,10 @@
 #!/bin/bash
 
 https_proxy=''
-proxy_auth='https://yourproxy.com'
+proxy_auth='https://your.proxy.com'
 
 base_repo='dockerhub.deepglint.com/atlas/developmentkit_base'
-base_tag=v0.5-x86_64
+base_tag=v0.6-x86_64
 
 advanced_repo='dockerhub.deepglint.com/atlas/developmentkit_advanced'
 advanced_tag=v0.7-x86_64

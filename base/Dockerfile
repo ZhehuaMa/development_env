@@ -106,6 +106,8 @@ RUN curl -fsSLO https://github.com/golangci/golangci-lint/releases/download/v1.4
     rm -rf golangci-lint-1.45.2-linux-amd64/ golangci-lint-1.45.2-linux-amd64.tar.gz
 SHELL ["/bin/sh", "-c"]
 
+RUN apt-get update && apt-get install -y jq
+
 EXPOSE 22
 CMD ["tail", "-f", "/dev/null"]
 
