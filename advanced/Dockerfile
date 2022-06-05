@@ -116,3 +116,7 @@ RUN echo '' >> ~/.zshrc; echo "export LD_LIBRARY_PATH=$HOME/anaconda3/lib" >> ~/
 
 RUN echo '' >> ~/.zshrc && echo 'export GONOPROXY="https://gitlab.deepglint.com"' >> ~/.zshrc
 
+RUN pip3 install Flask
+RUN apt-get update && apt-get install -y libpq-dev
+RUN pip3 install psycopg2
+

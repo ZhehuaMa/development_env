@@ -7,7 +7,7 @@ base_repo='dockerhub.deepglint.com/atlas/developmentkit_base'
 base_tag=v0.5-x86_64
 
 advanced_repo='dockerhub.deepglint.com/atlas/developmentkit_advanced'
-advanced_tag=v0.6-x86_64
+advanced_tag=v0.7-x86_64
 
 context_path=''
 build_arg=''
