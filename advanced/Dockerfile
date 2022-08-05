@@ -1,10 +1,10 @@
-FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.6-x86_64
+FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.7-x86_64
 
 RUN curl -fsSLO https://registrationcenter-download.intel.com/akdlm/irc_nas/18487/l_BaseKit_p_2022.1.2.146_offline.sh && \
     sh ./l_BaseKit_p_2022.1.2.146_offline.sh \
     --remove-extracted-files yes \
     -a --silent --eula accept --components intel.oneapi.lin.mkl.devel:intel.oneapi.lin.tbb.devel && \
-    rm -rf intel l_BaseKit_p_2022.1.2.146_offline.sh
+    rm intel l_BaseKit_p_2022.1.2.146_offline.sh
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN curl -fsSLO https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin && \
