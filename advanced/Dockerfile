@@ -1,32 +1,37 @@
-FROM dockerhub.deepglint.com/atlas/developmentkit_base:v0.7-x86_64
+FROM dockerhub.deepglint.com/atlas/developmentkit_base:v1.0-x86_64
 
-RUN curl -fsSLO https://registrationcenter-download.intel.com/akdlm/irc_nas/18487/l_BaseKit_p_2022.1.2.146_offline.sh && \
-    sh ./l_BaseKit_p_2022.1.2.146_offline.sh \
+# RUN curl -fsSLO https://registrationcenter-download.intel.com/akdlm/irc_nas/18487/l_BaseKit_p_2022.1.2.146_offline.sh && \
+COPY l_BaseKit_p_2022.1.2.146_offline.sh .
+RUN  sh ./l_BaseKit_p_2022.1.2.146_offline.sh \
     --remove-extracted-files yes \
     -a --silent --eula accept --components intel.oneapi.lin.mkl.devel:intel.oneapi.lin.tbb.devel && \
-    rm intel l_BaseKit_p_2022.1.2.146_offline.sh
+    rm -r intel l_BaseKit_p_2022.1.2.146_offline.sh
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN curl -fsSLO https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin && \
-    curl -fsSLO https://developer.download.nvidia.com/compute/cuda/11.6.2/local_installers/cuda-repo-ubuntu1804-11-6-local_11.6.2-510.47.03-1_amd64.deb && \
-    apt-get install -y linux-headers-$(uname -r) && \
-    dpkg -i cuda-repo-ubuntu1804-11-6-local_11.6.2-510.47.03-1_amd64.deb && \
-    apt-key add /var/cuda-repo-ubuntu1804-11-6-local/7fa2af80.pub && \
-    mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
+# RUN curl -fsSLO https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin && \
+#     curl -fsSLO https://developer.download.nvidia.com/compute/cuda/11.7.1/local_installers/cuda-repo-ubuntu2004-11-7-local_11.7.1-515.65.01-1_amd64.deb && \
+# apt-get install -y linux-headers-$(uname -r) # kernel development package should be installed on the host machine.
+COPY cuda-ubuntu2004.pin .
+COPY cuda-repo-ubuntu2004-11-7-local_11.7.1-515.65.01-1_amd64.deb .
+RUN apt-key del 7fa2af80 && \
+    mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
+    dpkg -i cuda-repo-ubuntu2004-11-7-local_11.7.1-515.65.01-1_amd64.deb && \
+    cp /var/cuda-repo-ubuntu2004-11-7-local/cuda-*-keyring.gpg /usr/share/keyrings/ && \
     apt-get update && \
     apt-get install -y cuda && \
     apt-get install -y nvidia-gds && \
     echo '' >> /root/.zshrc && \
-    echo 'export PATH=$PATH:/usr/local/cuda-11.6/bin' >> /root/.zshrc && \
-    rm cuda-repo-ubuntu1804-11-6-local_11.6.2-510.47.03-1_amd64.deb
+    echo 'export PATH=$PATH:/usr/local/cuda-11.7/bin' >> /root/.zshrc && \
+    rm cuda-repo-ubuntu2004-11-7-local_11.7.1-515.65.01-1_amd64.deb
 # The approriate version of the nvidia display driver should be installed on the host to make sure
 # cuda applications can work in the container.
 
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 
-RUN curl -fsSLO https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh && \
-    bash ./Anaconda3-2021.11-Linux-x86_64.sh -b && \
+# RUN curl -fsSLO https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh && \
+COPY Anaconda3-2021.11-Linux-x86_64.sh .
+RUN bash ./Anaconda3-2021.11-Linux-x86_64.sh -b && \
     eval "$(/root/anaconda3/bin/conda shell.zsh hook)" && \
     conda init zsh && \
     conda install -y pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch && \
@@ -106,12 +111,12 @@ RUN cd caffe && \
     grep 'gflags::' $(find . -name '*') 2>/dev/null | awk -F ':' '{print $1}' | xargs -I '{}' sed -i 's/gflags::/google::/' '{}' && \
     sed -i 's/SetTotalBytesLimit(\(.*\), .*);/SetTotalBytesLimit(\1);/' src/caffe/util/io.cpp && \
     sed -i 's#/opt/intel/mkl#/opt/intel/oneapi/mkl/latest#' Makefile
-RUN cd caffe && \
-    make all -j $(nproc) && \
-    make pycaffe -j $(nproc) && \
-    sed -i 's/as_grey/as_gray/' python/caffe/io.py && \
-    echo '' >> ~/.zshrc && \
-    echo "export PYTHONPATH=$HOME/caffe/python" >> ~/.zshrc
+# RUN cd caffe && \
+#     make all -j $(nproc) && \
+#     make pycaffe -j $(nproc) && \
+#     sed -i 's/as_grey/as_gray/' python/caffe/io.py && \
+#     echo '' >> ~/.zshrc && \
+#     echo "export PYTHONPATH=$HOME/caffe/python" >> ~/.zshrc
 RUN echo '' >> ~/.zshrc; echo "export LD_LIBRARY_PATH=$HOME/anaconda3/lib" >> ~/.zshrc
 
 RUN echo '' >> ~/.zshrc && echo 'export GONOPROXY="https://gitlab.deepglint.com"' >> ~/.zshrc
@@ -119,4 +124,9 @@ RUN echo '' >> ~/.zshrc && echo 'export GONOPROXY="https://gitlab.deepglint.com"
 RUN pip3 install Flask
 RUN apt-get update && apt-get install -y libpq-dev
 RUN pip3 install psycopg2
+
+RUN curl -LOs https://github.com/golang-migrate/migrate/releases/download/v4.15.2/migrate.linux-amd64.tar.gz && \
+    tar xvzf migrate.linux-amd64.tar.gz && \
+    mv migrate $HOME/gocode/bin/ && \
+    rm migrate.linux-amd64.tar.gz LICENSE README.md
 

@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 WORKDIR /root
 
@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG TZ=Asia/Shanghai
 
 # Use Netease mirror sources
-COPY sources.list /etc/apt/sources.list
+COPY sources.list-20.04 /etc/apt/sources.list
 
 RUN apt-get update
 RUN apt-get install -y apt-transport-https
